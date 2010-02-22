@@ -28,6 +28,7 @@ dojo.require('Game.Transformers.Decepticon');
 
 			d.subscribe('/game/new', this, 'generate');
 			d.subscribe('/game/reset', this, 'reset');
+			d.subscribe('/game/end', this, 'displayResults');
 		},
 		
 		setupTeams : function() {
@@ -56,6 +57,7 @@ dojo.require('Game.Transformers.Decepticon');
 					this[team].push(new this.teams[team]());
 				}
 			});
+			d.publish('/game/start');
 		},
 		
 		reset : function() {
@@ -78,17 +80,23 @@ dojo.require('Game.Transformers.Decepticon');
 			var config = {};
 			
 			d.forEach(this.teamNames, function(team) {
-				config[team] = this.randomTeamSize();
+				config[team] = this._randomTeamSize();
 			}, this);
 			
 			d.publish('/game/new', [ config ]);
 		},
 		
-		randomTeamSize : function() {
+		_randomTeamSize : function() {
 			return Math.floor(Math.random() * this.maxTeamSize) + 1;
+		},
+		
+		displayResults : function() {
+			
 		}
 	});
 	
 })(dojo);
 
-Game.Controller = new Game.Controller({ rate: dojo.config.frameRate || 10 }, 'controller');
+dojo.addOnLoad(function() {
+	Game.Controller = new Game.Controller({ rate: dojo.config.frameRate || 10 }, 'controller');
+});
