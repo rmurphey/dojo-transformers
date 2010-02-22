@@ -11,9 +11,9 @@
 	<script src="/js/dojo/dojo.js"></script>
 	<!-- <script src="/js/release/game/dojo/dojo.js"></script> -->
 	<script>
-		dojo.require('Game.Controller');
+		dojo.require('Transformers.Game');
 		dojo.addOnLoad(function() {
-			new Game.Controller({}).placeAt(dojo.byId('controller'), 'only');
+			new Transformers.Game();
 		});
 	</script>
 
