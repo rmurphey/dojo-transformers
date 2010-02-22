@@ -1,1 +1,0 @@
-dojo.provide('Game.Transformers.Decepticon');

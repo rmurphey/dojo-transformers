@@ -5,27 +5,17 @@
 	<title>Page Title</title>
 </head>
 <body>
-	<form id="controller">
-		<ul>
-			<li>
-				<label for="autobots"># of Autobots</label>
-				<input type="text" id="autobots" />
-			</li>
-			<li>
-				<label for="decepticons"># of Decepticons</label>
-				<input type="text" id="decepticons" />
-			</li>
-			<li>
-				<input type="submit" id="generate" value="Generate Game" />
-			</li>
-			<li>
-				<input type="submit" id="random" value="Generate Random Game" />
-			</li>
-		</ul>
-	</form>
+	<div id="controller">
+	</div>
 	
 	<script src="/js/dojo/dojo.js"></script>
-	<script>dojo.require('Game.Controller');</script>
+	<!-- <script src="/js/release/game/dojo/dojo.js"></script> -->
+	<script>
+		dojo.require('Game.Controller');
+		dojo.addOnLoad(function() {
+			new Game.Controller({}).placeAt(dojo.byId('controller'), 'only');
+		});
+	</script>
 
 </body>
 </html>

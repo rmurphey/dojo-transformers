@@ -1,93 +1,49 @@
 dojo.provide('Game.Controller');
 
 dojo.require('dijit._Widget');
-dojo.require('dojo.string');
+dojo.require('dijit._Templated');
 
-dojo.require('Game.Transformers.Autobot');
-dojo.require('Game.Transformers.Decepticon');
+dojo.require('Game.Team');
 
 (function(d) {
-	d.declare('Game.Controller', dijit._Widget, {
-		rate : 			100, 	// ms
-		teamTemplate : '<li><label for="${team}"># of ${team}</label><input id="${team}" /></li>',
+	d.declare('Game.Controller', [ dijit._Widget, dijit._Templated ], {
+		rate : 100, 	// ms
+		templatePath : d.moduleUrl('Game', 'templates/controller.html'),
 		
 		constructor : function(args) {
-			this.teams = args.teams || {
-				autobots : Game.Transformers.Autobot,
-				decepticons : Game.Transformers.Decepticon
-			};
-			
-			this.maxTeamSize = args.maxTeamSize || 5;
+			this.teamNames = args.teamNames || ['autobots', 'decepticons'];
 		},
 		
 		postCreate : function() {
 			this.setupTeams();
 
-			this.connect(dojo.byId('generate'), 'click', 'userGenerated');
-			this.connect(dojo.byId('random'), 'click', 'randomGenerated');
+			this.connect(this.generateUserGame, 'click', 'userGenerated');
+			this.connect(this.generateRandomGame, 'click', 'randomGenerated');
 
-			d.subscribe('/game/new', this, 'generate');
-			d.subscribe('/game/reset', this, 'reset');
 			d.subscribe('/game/end', this, 'displayResults');
 		},
 		
 		setupTeams : function() {
-			this.inputs = {};
-			this.teamNames = [];
-
-			for (var team in this.teams) {
-				if (!this.teams.hasOwnProperty(team)) { return; }
-
-				this.inputs[team] = d.byId(team) || 
-					d.place(
-						d.string.substitute(this.teamTemplate, { team : team }), 
-						d.query('ul', this.domNode)[0],
-						'first'
-					);
-
-				this.teamNames.push(team);
-				this[team] = [];
-			}
+			this.teams = d.map(this.teamNames, function(team) {
+				return new Game.Team({ team : team }).placeAt(this.domNode, 'last');
+			}, this);
+			console.log(this.teams);
 		},
 
-		generate : function(config) {
-			d.publish('/game/reset');
-			d.forEach(this.teamNames, function(team) {
-				while (--config[team]) {
-					this[team].push(new this.teams[team]());
-				}
+		generate : function(type) {
+			d.forEach([ 'reset', 'new', 'start' ], function(topic) {
+				d.publish('/game/' + topic, [ { type : type }]);
 			}, this);
-			d.publish('/game/start');
 		},
 		
-		reset : function() {
-			d.forEach(this.teamNames, function(team) {
-				this[team] = [];
-			}, this);
-		},
-
 		userGenerated : function(e) {
 			e.preventDefault();
-			
-			var config = {};
-
-			d.forEach(this.teamNames, function(team) {
-				config[team] = this.inputs[team].value || 1;
-			}, this);
-			
-			d.publish('/game/new', [ config ]);
+			this.generate('user');
 		},
 
 		randomGenerated : function(e) {
 			e.preventDefault();
-			
-			var config = {};
-			
-			d.forEach(this.teamNames, function(team) {
-				config[team] = this._randomTeamSize();
-			}, this);
-			
-			d.publish('/game/new', [ config ]);
+			this.generate('random');
 		},
 		
 		_randomTeamSize : function() {
@@ -95,12 +51,13 @@ dojo.require('Game.Transformers.Decepticon');
 		},
 		
 		displayResults : function() {
+			var results = [];
+			d.forEach(this.teams, function(team) {
+				results.push(team.getResults());
+			});
 			
+			console.log(results);
 		}
 	});
 	
 })(dojo);
-
-dojo.addOnLoad(function() {
-	Game.Controller = new Game.Controller({ rate: dojo.config.frameRate || 10 }, 'controller');
-});
