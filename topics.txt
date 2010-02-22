@@ -1,0 +1,12 @@
+[a|d] means "autobots" or "decepticons"
+
+/game/start					begins play
+/game/new					creates a new game
+/game/reset					ends the game and destroys all bot instances
+
+/team/[a|d]/attack			attack the opposing team; bigger results, bigger risk
+/team/[a|d]/defend			defend; can't cause much damage, but won't take much either
+/team/[a|d]/transform		change state; bots in docile state can't attack but are hard to damage
+/team/[a|d]/retreat			run; can't cause any damage, won't take much either; costs some health
+
+/ping						controller listens here for bots to send updates; do other bots listen too?
