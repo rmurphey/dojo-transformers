@@ -5,15 +5,18 @@
 /game/reset					ends the game and destroys all bot instances
 /game/pause					pauses play; bots remain intact
 /game/end					game over 
-/game/join					team joins a game
 
 /team/[a|d]/attack			attack the opposing team; bigger results, bigger risk
 /team/[a|d]/defend			defend; can't cause much damage, but won't take much either
 /team/[a|d]/transform		change state; bots in docile state can't attack but are hard to damage
 /team/[a|d]/retreat			run; can't cause any damage, won't take much either; costs some health
+/team/join					team joins a game
 
-/ping						controller listens here for bots to send updates; do other bots listen too?
+/status/request				bots and teams listen here for status requests; respond on /ping
+/ping/team					controller listens here for teams to send updates
+/ping/bot					controller listens here for bots to send updates
 
 /bot/join					bot joins the game
 /bot/die					bot leaves the game
 /bot/msg					bot says something
+

@@ -11,14 +11,13 @@ dojo.require('dijit._Widget');
 			this.health = this.startingHealth;
 			
 			d.subscribe('/status/request', this, '_sendStatus');
-		},
-		
-		postCreate : function() {
-			this._updateHealth();
+			d.subscribe('/game/new', this, 'destroy');
+			
+			d.publish('/bot/join', [ this ]);
 		},
 		
 		_sendStatus : function() {
 			d.publish('/status', [ this ]);
-		}		
+		}
 	});	
 })(dojo);
