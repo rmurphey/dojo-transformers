@@ -1,21 +1,21 @@
-dojo.provide('Game.Team');
+dojo.provide('Transformers.Team');
 
 dojo.require('dijit._Widget');
 
-dojo.require('Game._Transformer');
-dojo.require('Game.Autobot');
-dojo.require('Game.Decepticon');
+dojo.require('Transformers._Transformer');
+dojo.require('Transformers.Autobot');
+dojo.require('Transformers.Decepticon');
 
 (function(d) {
-	d.declare('Game.Team', [ dijit._Widget, dijit._Templated ], {
+	d.declare('Transformers.Team', [ dijit._Widget, dijit._Templated ], {
 		rate : 100,
 		maxTeamSize : 5,
 		creators : {
-			'autobots' : Game.Autobot,
-			'decepticons' : Game.Decepticon,
-			'default' : Game._Transformer
+			'autobots' : Transformers.Autobot,
+			'decepticons' : Transformers.Decepticon,
+			'default' : Transformers._Transformer
 		},
-		templatePath : d.moduleUrl('Game', 'templates/team.html'),
+		templatePath : d.moduleUrl('Transformers', 'templates/team.html'),
 		
 		constructor : function(args) {
 			this.team = args.team || 'anonymous';

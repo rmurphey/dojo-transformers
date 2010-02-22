@@ -1,14 +1,14 @@
-dojo.provide('Game.Controller');
+dojo.provide('Transformers.Controller');
 
 dojo.require('dijit._Widget');
 dojo.require('dijit._Templated');
 
-dojo.require('Game.Team');
+dojo.require('Transformers.Team');
 
 (function(d) {
-	d.declare('Game.Controller', [ dijit._Widget, dijit._Templated ], {
+	d.declare('Transformers.Controller', [ dijit._Widget, dijit._Templated ], {
 		rate : 100, 	// ms
-		templatePath : d.moduleUrl('Game', 'templates/controller.html'),
+		templatePath : d.moduleUrl('Transformers', 'templates/controller.html'),
 		
 		constructor : function(args) {
 			this.teamNames = args.teamNames || ['autobots', 'decepticons'];
@@ -25,7 +25,7 @@ dojo.require('Game.Team');
 		
 		setupTeams : function() {
 			this.teams = d.map(this.teamNames, function(team) {
-				return new Game.Team({ team : team }).placeAt(this.domNode, 'last');
+				return new Transformers.Team({ team : team }).placeAt(this.domNode, 'last');
 			}, this);
 			console.log(this.teams);
 		},

@@ -3,6 +3,8 @@
 /game/start					begins play
 /game/new					creates a new game
 /game/reset					ends the game and destroys all bot instances
+/game/pause					pauses play; bots remain intact
+/game/end					game over 
 
 /team/[a|d]/attack			attack the opposing team; bigger results, bigger risk
 /team/[a|d]/defend			defend; can't cause much damage, but won't take much either
@@ -10,3 +12,7 @@
 /team/[a|d]/retreat			run; can't cause any damage, won't take much either; costs some health
 
 /ping						controller listens here for bots to send updates; do other bots listen too?
+
+/bot/join					bot joins the game
+/bot/die					bot leaves the game
+/bot/msg					bot says something
