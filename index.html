@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Page Title</title>
+</head>
+<body>
+	<form id="controller">
+		<ul>
+			<li>
+				<label for="autobots"># of Autobots</label>
+				<input type="text" id="autobots" />
+			</li>
+			<li>
+				<label for="decepticons"># of Decepticons</label>
+				<input type="text" id="decepticons" />
+			</li>
+			<li>
+				<input type="submit" id="generate" value="Generate Game" />
+			</li>
+			<li>
+				<input type="submit" id="random" value="Generate Random Game" />
+			</li>
+		</ul>
+	</form>
+	
+	<script src="/js/dojo-release-1.4.1-src/dojo/dojo.js"></script>
+	<script>dojo.require('Game.Controller');</script>
+
+</body>
+</html>
