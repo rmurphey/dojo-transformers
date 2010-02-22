@@ -27,6 +27,7 @@ dojo.require('Game.Transformers.Decepticon');
 			d.connect('random', 'click', this, 'randomGenerated');
 
 			d.subscribe('/game/new', this, 'generate');
+			d.subscribe('/game/reset', this, 'reset');
 		},
 		
 		setupTeams : function() {
@@ -42,14 +43,14 @@ dojo.require('Game.Transformers.Decepticon');
 						d.query('ul', this.domNode)[0],
 						'first'
 					);
+
 				this.teamNames.push(team);
 				this[team] = [];
 			}
 		},
 
 		generate : function(config) {
-			this.reset();
-
+			d.publish('/game/reset');
 			d.forEach(this.teamNames, function(team) {
 				while (--config[team]) {
 					this[team].push(new this.teams[team]());
@@ -58,7 +59,6 @@ dojo.require('Game.Transformers.Decepticon');
 		},
 		
 		reset : function() {
-			d.publish('/game/reset');
 			d.forEach(this.teamNames, function(team) {
 				this[team] = [];
 			}, this);
@@ -68,7 +68,7 @@ dojo.require('Game.Transformers.Decepticon');
 			var config = {};
 
 			d.forEach(this.teamNames, function(team) {
-				config[team] = this.inputs[team].value;
+				config[team] = this.inputs[team].value || 1;
 			}, this);
 			
 			d.publish('/game/new', [ config ]);
@@ -76,15 +76,16 @@ dojo.require('Game.Transformers.Decepticon');
 
 		randomGenerated : function(e) {
 			var config = {};
+			
 			d.forEach(this.teamNames, function(team) {
 				config[team] = this.randomTeamSize();
 			}, this);
 			
 			d.publish('/game/new', [ config ]);
-		}
+		},
 		
 		randomTeamSize : function() {
-			return Math.floor(Math.random() * this.maxTeamSize) + 1
+			return Math.floor(Math.random() * this.maxTeamSize) + 1;
 		}
 	});
 	
