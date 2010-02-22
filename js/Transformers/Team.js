@@ -3,35 +3,53 @@ dojo.provide('Transformers.Team');
 dojo.require('dijit._Widget');
 
 dojo.require('Transformers._Transformer');
-dojo.require('Transformers.Autobot');
-dojo.require('Transformers.Decepticon');
 
 (function(d) {
 	d.declare('Transformers.Team', [ dijit._Widget ], {
-		defaultTeamSize : 5,
+		defaultTeamSize : 20,
 		
-		constructor : function(args) {
-			this.team = args.team || 'anonymous';
-			this.score = 0;
+		constructor : function(team) {
+			this.team = team;
+			this.pings = 0;
+			this.teamSize = team.size || this.defaultTeamSize;
+
+			var name = this.team.name; 
+
+			d.subscribe('/' + name + '/bot/ping', this, '_handleBotPing');
+			d.subscribe('/' + name + '/bot/join', this, '_handleBotJoin');
+			d.subscribe('/' + name + '/play', this, '_play');
+			
+			d.subscribe('/game/end', this, 'destroy');
+
 			this._setup();
-
-			d.subscribe('/game/start', this, '_setup');
-			d.subscribe('/status/request', this, '_sendStatus');
-
-			d.publish('/game/join', [ this ]);			
+			
+			d.publish('/team/join', [ this ]);			
 		},
 		
 		_setup : function(config) {
-			var size = this.teamSize || this.defaultTeamSize;
+			var size = this.teamSize;
 			
 			this.members = [];
-			while (size--) {
-				this.members.push(new this.creator({ team : this.name }));
+			
+			while (size--) { new Transformers._Transformer(this.team); }
+		},
+		
+		_play : function(config) {
+			var orders = {};
+			d.publish('/' + this.team.name + '/bots/play', [ orders ]);
+		},
+		
+		_handleBotPing : function(bot) {
+			this.pings++;
+			if (this.pings == this.members.length) {
+				this.pings = 0;
+				d.publish('/turn/over', [ this.members ]);
 			}
 		},
 		
-		_sendStatus : function() {
-			d.publish('/team/ping', [ this ]);
-		}
+		_handleBotJoin : function(bot) {
+			console.log(bot);	
+			this.members.push(bot);
+		}		
 	});
 })(dojo);

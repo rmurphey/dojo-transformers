@@ -1,28 +1,66 @@
 dojo.provide('Transformers.Referee');
 
 (function(d) {
-	d.declare('Transformers.Referee', null, {
-		rate : 100, 	// ms
+	d.declare('Transformers.Referee', [ dijit._Widget ], {
+		rate : 1000, 	// ms
 		
 		constructor : function() {
-			d.subscribe('/team/join', this, '_registerTeam');
-			d.subscribe('/bot/ping', this, '_handleBotPing');
-
-			d.subscribe('/game/start', this, '_doTurn');
+			this.nextTurn = Math.random() > 0.5 ? 0 : 1;
+			this.teams = [];
+			this.teamResults = [];
 			
-			this.firstTurn = Math.random() > 0.5 ? 0 : 1;
+			this.turns = 0;
+			this.maxTurns = 100;
+			
+
+			d.subscribe('/team/ping', this, '_handleTeamPing');
+			d.subscribe('/game/start', this, '_doTurn');
+			d.subscribe('/game/end', this, '_endGame');
+			d.subscribe('/team/join', this, '_handleTeamJoin');
+			d.subscribe('/turn/over', this, '_turnOver');
 		},
 		
 		_doTurn : function() {
+			if (this.turns++ > this.maxTurns) { 
+				d.publish('/game/end');
+				return;
+			}
 			
+			var teamName = this.teams[this.nextTurn].name;
+			d.publish('/' + teamName + '/play');
+			this.nextTurn = this.nextTurn === 0 ? 1 : 0;
 		},
 		
-		_registerTeam : function(team) {
+		_turnOver : function(bots) {
+			this.teamResults.push(bots);
+			
+			if (this.teamResults.length === this.teams.length) {
+				this._evaluateTurn();
+			}
+		},
+		
+		_evaluateTurn : function() {
+			// fancy calculations go here ... later
+			console.log('the turn is over. we have no idea who won yet.');
+			console.dir(this.teamResults);
+			
+			// reset for the next turn
+			this.teamResults = [];
+			this.timeout = setTimeout(d.hitch(this, '_doTurn'), this.rate);
+		},
+		
+		_handleTeamJoin : function(team) {
 			this.teams.push(team);
 		},
 		
-		_handleBotPing : function(ping) {
+		_handleTeamPing : function(ping) {
 			console.dir(ping);
+		},
+		
+		_endGame : function(data) {
+			console.log(data);
+			this.timeout && clearTimeout(this.timeout);
+			this.destroy();
 		}
 	});
 })(dojo);

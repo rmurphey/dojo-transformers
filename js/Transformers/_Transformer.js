@@ -6,18 +6,19 @@ dojo.require('dijit._Widget');
 	d.declare('Transformers._Transformer', [ dijit._Widget ], {
 		startingHealth : 100,
 		
-		constructor : function(args) {
-			this.team = args.team;
-			this.health = this.startingHealth;
+		constructor : function(team) {
+			this.team = team;
+			this.health = team.startingHealth || this.startingHealth;
 			
-			d.subscribe('/status/request', this, '_sendStatus');
 			d.subscribe('/game/new', this, 'destroy');
+			d.subscribe('/' + this.team.name + '/bots/play', this, '_play');
 			
-			d.publish('/bot/join', [ this ]);
+			d.publish('/' + this.team.name + '/bot/join', [ this ]);
 		},
 		
-		_sendStatus : function() {
-			d.publish('/status', [ this ]);
+		_play : function(orders) {
+			console.dir(orders);
+			d.publish('/' + this.team.name + '/bot/ping', [ this ]);
 		}
 	});	
 })(dojo);
