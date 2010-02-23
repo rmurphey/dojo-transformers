@@ -12,7 +12,6 @@ dojo.provide('Transformers.Referee');
 			this.turns = 0;
 			this.maxTurns = 100;
 			
-
 			d.subscribe('/team/ping', this, '_handleTeamPing');
 			d.subscribe('/game/start', this, '_doTurn');
 			d.subscribe('/game/end', this, '_endGame');
@@ -25,9 +24,14 @@ dojo.provide('Transformers.Referee');
 				d.publish('/game/end');
 				return;
 			}
+			console.log('referee doing turn');
+			console.log(this.teams);
 			
-			var teamName = this.teams[this.nextTurn].name;
+			var teamName = this.teams[this.nextTurn].team.name;
+			console.log('turn: ' + teamName);
 			d.publish('/' + teamName + '/play');
+			console.log('turn complete');
+			
 			this.nextTurn = this.nextTurn === 0 ? 1 : 0;
 		},
 		
@@ -50,7 +54,13 @@ dojo.provide('Transformers.Referee');
 		},
 		
 		_handleTeamJoin : function(team) {
+			console.log('team joined');
 			this.teams.push(team);
+			
+			if (this.teams.length === 2) {
+				console.log('starting game');
+				d.publish('/game/start');
+			}
 		},
 		
 		_handleTeamPing : function(ping) {

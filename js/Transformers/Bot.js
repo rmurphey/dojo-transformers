@@ -1,9 +1,9 @@
-dojo.provide('Transformers._Transformer');
+dojo.provide('Transformers.Bot');
 
 dojo.require('dijit._Widget');
 
 (function(d) {
-	d.declare('Transformers._Transformer', [ dijit._Widget ], {
+	d.declare('Transformers.Bot', [ dijit._Widget ], {
 		startingHealth : 100,
 		
 		constructor : function(team) {
@@ -17,7 +17,6 @@ dojo.require('dijit._Widget');
 		},
 		
 		_play : function(orders) {
-			console.dir(orders);
 			d.publish('/' + this.team.name + '/bot/ping', [ this ]);
 		}
 	});	

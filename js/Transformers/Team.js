@@ -2,13 +2,14 @@ dojo.provide('Transformers.Team');
 
 dojo.require('dijit._Widget');
 
-dojo.require('Transformers._Transformer');
+dojo.require('Transformers.Bot');
 
 (function(d) {
 	d.declare('Transformers.Team', [ dijit._Widget ], {
 		defaultTeamSize : 20,
 		
 		constructor : function(team) {
+			console.log('creating team');
 			this.team = team;
 			this.pings = 0;
 			this.teamSize = team.size || this.defaultTeamSize;
@@ -22,8 +23,6 @@ dojo.require('Transformers._Transformer');
 			d.subscribe('/game/end', this, 'destroy');
 
 			this._setup();
-			
-			d.publish('/team/join', [ this ]);			
 		},
 		
 		_setup : function(config) {
@@ -31,10 +30,11 @@ dojo.require('Transformers._Transformer');
 			
 			this.members = [];
 			
-			while (size--) { new Transformers._Transformer(this.team); }
+			while (size--) { new Transformers.Bot(this.team); }
 		},
 		
 		_play : function(config) {
+			console.log('turn: ' + this.team.name);
 			var orders = {};
 			d.publish('/' + this.team.name + '/bots/play', [ orders ]);
 		},
@@ -48,8 +48,10 @@ dojo.require('Transformers._Transformer');
 		},
 		
 		_handleBotJoin : function(bot) {
-			console.log(bot);	
 			this.members.push(bot);
+			if (this.members.length === this.teamSize) {
+				d.publish('/team/join', [ this ]);			
+			}
 		}		
 	});
 })(dojo);

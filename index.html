@@ -7,12 +7,28 @@
 <body>
 	<div id="controller">
 	</div>
+	<script>
+	var djConfig = {
+		isDebug : true
+	};
+	</script>
 	
 	<script src="/js/dojo/dojo.js"></script>
 	<!-- <script src="/js/release/game/dojo/dojo.js"></script> -->
 	<script>
 		dojo.require('Transformers.Game');
 		dojo.addOnLoad(function() {
+			/*
+			var output = '';
+			
+			setInterval(function() {
+				if (!output) { return; }
+				console.log(output); output = '';
+			}, 100);
+
+			dojo.connect(dojo, "publish", function(){ output += arguments[0] + '\n'; });
+			*/
+			
 			new Transformers.Game();
 		});
 	</script>

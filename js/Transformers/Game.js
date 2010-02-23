@@ -26,10 +26,12 @@ dojo.require('Transformers.Team');
 		
 		_newGame : function() {
 			this.ref && this.ref.destroy();
+
+			console.log('creating referee');
 			this.ref = new Transformers.Referee({ game : this });			
-			d.forEach(this.teams, function(t) { new Transformers.Team(t); });
-			
-			d.publish('/game/start');
+
+			console.log('creating teams');
+			d.forEach(this.teams, function(t) { new Transformers.Team(t); });			
 		}
 	});
 })(dojo);
