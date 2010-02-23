@@ -9,7 +9,6 @@ dojo.require('Transformers.Bot');
 		defaultTeamSize : 20,
 		
 		constructor : function(team) {
-			console.log('creating team');
 			this.team = team;
 			this.pings = 0;
 			this.teamSize = team.size || this.defaultTeamSize;
@@ -18,7 +17,7 @@ dojo.require('Transformers.Bot');
 
 			d.subscribe('/' + name + '/bot/ping', this, '_handleBotPing');
 			d.subscribe('/' + name + '/bot/join', this, '_handleBotJoin');
-			d.subscribe('/' + name + '/play', this, '_play');
+			d.subscribe('/play', this, '_play');
 			
 			d.subscribe('/game/end', this, 'destroy');
 
@@ -33,10 +32,25 @@ dojo.require('Transformers.Bot');
 			while (size--) { new Transformers.Bot(this.team); }
 		},
 		
-		_play : function(config) {
-			console.log('turn: ' + this.team.name);
-			var orders = {};
-			d.publish('/' + this.team.name + '/bots/play', [ orders ]);
+		_play : function(teamName) {
+			var orders = teamName == this.team.name ? this._attack() : this._defend();
+			d.publish('/bots/play', [ orders ]);
+		},
+		
+		_attack : function() {
+			// needs smartness
+			var orders = {
+				action : 'attack'
+			};
+			return orders;
+		},
+		
+		_defend : function() {
+			// needs smartness
+			var orders = {
+				action : 'defend'
+			};
+			return orders;
 		},
 		
 		_handleBotPing : function(bot) {

@@ -29,7 +29,7 @@ dojo.provide('Transformers.Referee');
 			
 			var teamName = this.teams[this.nextTurn].team.name;
 			console.log('turn: ' + teamName);
-			d.publish('/' + teamName + '/play');
+			d.publish('/play', [ teamName ]);
 			console.log('turn complete');
 			
 			this.nextTurn = this.nextTurn === 0 ? 1 : 0;
