@@ -9,6 +9,7 @@ dojo.require('Transformers.Bot');
 		defaultTeamSize : 20,
 		
 		constructor : function(team) {
+			console.log('new team');
 			this.name = team.name;
 			this.maxHealth = team.health;
 			this.playerConfig = team;
@@ -16,12 +17,11 @@ dojo.require('Transformers.Bot');
 			this.pings = 0;
 			this.teamSize = this.size || this.defaultTeamSize;
 
-			var name = this.name;
 			this.bots = []; 
 
-			d.subscribe('/' + name + '/bot/ping', this, '_handleBotPing');
-			d.subscribe('/' + name + '/bot/join', this, '_handleBotJoin');
-			d.subscribe('/play', this, '_play');
+			d.subscribe('/' + this.name + '/bot/ping', this, '_handleBotPing');
+			d.subscribe('/' + this.name + '/bot/join', this, '_handleBotJoin');
+			d.subscribe('/team/play', this, '_play');
 			
 			d.subscribe('/game/end', this, 'destroy');
 
@@ -34,7 +34,8 @@ dojo.require('Transformers.Bot');
 		},
 		
 		_play : function(teamName) {
-			d.publish('/bots/play', [ this._getOrders() ]);
+			var orders = this._getOrders();
+			d.publish('/' + this.name + '/bots/play', [ orders ]);
 		},
 
 		_getOrders : function() {
@@ -44,8 +45,8 @@ dojo.require('Transformers.Bot');
 			};
 			
 			d.forEach(this.bots, function(bot) {
-				orders.strength += this.health;
-				orders.speed += (100 - this.maxHealth);
+				orders.strength += bot.health;
+				orders.speed += (100 - bot.maxHealth);
 			});
 			
 			return orders;

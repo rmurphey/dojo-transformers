@@ -29,7 +29,7 @@ dojo.provide('Transformers.Referee');
 				return;
 			}
 			
-			d.publish('/play', [ this.results ]);
+			d.publish('/team/play', [ this.results ]);
 			console.log('turn complete');
 		},
 		
