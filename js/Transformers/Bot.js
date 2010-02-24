@@ -8,7 +8,7 @@ dojo.require('Transformers.Gun');
 	d.declare('Transformers.Bot', [ dijit._Widget ], {
 		constructor : function(config) {
 			this.config = config;
-			this.health = config.health;
+			this.health = config.maxHealth;
 			
 			if (!this.health) {
 				console.log('you created a dead bot -- it has no health');
@@ -30,16 +30,20 @@ dojo.require('Transformers.Gun');
 				this.guns.push(new Transformers.Gun());
 			}
 			
-			d.publish('/' + this.team.name + '/bot/join', [ this ]);
+			d.publish('/' + this.config.name + '/bot/join', [ this ]);
 		},
 		
 		_play : function(orders) {
 			console.log('orders', orders);
-			d.publish('/' + this.team.name + '/bot/ping', [ this ]);
+			d.publish('/' + this.config.name + '/bot/ping', [ this ]);
 		},
 		
 		_addHealth : function(h) {
 			this.health += h;
+		},
+		
+		_sendStatus : function() {
+			
 		}
 	});	
 })(dojo);
