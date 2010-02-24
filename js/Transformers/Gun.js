@@ -1,5 +1,7 @@
 dojo.provide('Transformers.Gun');
 
+dojo.require('Transformers._Weapon');
+
 (function(d) {
 	d.declare('Transformers.Gun', [ Transformers._Weapon ], {
 		maxDamage : 5,
