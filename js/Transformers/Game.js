@@ -12,12 +12,18 @@ dojo.require('Transformers.Team');
 			this.teams = (args && args.teams) || [
 				{
 					name : 'autobots',
-					evil : false
+					evil : false,
+					missiles : 1,
+					guns : 3,
+					health : 100
 				},
 				
 				{
 					name : 'decepticons',
-					evil : true
+					evil : true,
+					missiles : 3,
+					guns : 1,
+					health : 80
 				}
 			];
 			

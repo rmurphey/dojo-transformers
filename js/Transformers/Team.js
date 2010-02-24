@@ -9,11 +9,15 @@ dojo.require('Transformers.Bot');
 		defaultTeamSize : 20,
 		
 		constructor : function(team) {
-			this.team = team;
+			this.name = team.name;
+			this.maxHealth = team.health;
+			this.playerConfig = team;
+			
 			this.pings = 0;
-			this.teamSize = team.size || this.defaultTeamSize;
+			this.teamSize = this.size || this.defaultTeamSize;
 
-			var name = this.team.name; 
+			var name = this.name;
+			this.bots = []; 
 
 			d.subscribe('/' + name + '/bot/ping', this, '_handleBotPing');
 			d.subscribe('/' + name + '/bot/join', this, '_handleBotJoin');
@@ -26,46 +30,40 @@ dojo.require('Transformers.Bot');
 		
 		_setup : function(config) {
 			var size = this.teamSize;
-			
-			this.members = [];
-			
-			while (size--) { new Transformers.Bot(this.team); }
+			while (size--) { new Transformers.Bot(this); }
 		},
 		
 		_play : function(teamName) {
-			var orders = teamName == this.team.name ? this._attack() : this._defend();
-			d.publish('/bots/play', [ orders ]);
+			d.publish('/bots/play', [ this._getOrders() ]);
 		},
-		
-		_attack : function() {
-			// needs smartness
+
+		_getOrders : function() {
 			var orders = {
-				action : 'attack'
+				strength : 0,
+				speed : 0
 			};
-			return orders;
-		},
-		
-		_defend : function() {
-			// needs smartness
-			var orders = {
-				action : 'defend'
-			};
+			
+			d.forEach(this.bots, function(bot) {
+				orders.strength += this.health;
+				orders.speed += (100 - this.maxHealth);
+			});
+			
 			return orders;
 		},
 		
 		_handleBotPing : function(bot) {
 			this.pings++;
-			if (this.pings == this.members.length) {
+			if (this.pings == this.bots.length) {
 				this.pings = 0;
-				d.publish('/turn/over', [ this.members ]);
+				d.publish('/turn/over', [ this.bots ]);
 			}
 		},
 		
 		_handleBotJoin : function(bot) {
-			this.members.push(bot);
-			if (this.members.length === this.teamSize) {
+			this.bots.push(bot);
+			if (this.bots.length === this.teamSize) {
 				d.publish('/team/join', [ this ]);			
 			}
-		}		
+		}
 	});
 })(dojo);

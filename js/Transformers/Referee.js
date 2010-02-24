@@ -5,9 +5,10 @@ dojo.provide('Transformers.Referee');
 		rate : 1000, 	// ms
 		
 		constructor : function() {
-			this.nextTurn = Math.random() > 0.5 ? 0 : 1;
 			this.teams = [];
 			this.teamResults = [];
+			
+			this.results = {};
 			
 			this.turns = 0;
 			this.maxTurns = 100;
@@ -20,19 +21,16 @@ dojo.provide('Transformers.Referee');
 		},
 		
 		_doTurn : function() {
+			console.log('referee doing turn');
+
 			if (this.turns++ > this.maxTurns) { 
+				console.log('game over');
 				d.publish('/game/end');
 				return;
 			}
-			console.log('referee doing turn');
-			console.log(this.teams);
 			
-			var teamName = this.teams[this.nextTurn].team.name;
-			console.log('turn: ' + teamName);
-			d.publish('/play', [ teamName ]);
+			d.publish('/play', [ this.results ]);
 			console.log('turn complete');
-			
-			this.nextTurn = this.nextTurn === 0 ? 1 : 0;
 		},
 		
 		_turnOver : function(bots) {
