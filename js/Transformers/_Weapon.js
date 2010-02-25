@@ -1,5 +1,6 @@
 dojo.provide('Transformers._Weapon');
 
+
 (function() {
 	d.declare('Transformers._Weapon', [ dijit._Widget ], {
 		constructor : function() {
