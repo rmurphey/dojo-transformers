@@ -6,43 +6,51 @@ dojo.require('Transformers.Gun');
 
 (function(d) {
 	d.declare('Transformers.Bot', null, {
-		constructor : function(team) {
-			this.team = team;
-			this.health = team.maxHealth;
+		turnLength : 1000,
+		
+		constructor : function(config) {
+			this.config = config;
+			this.health = 100;
+			this.team = [];
 			
-			if (!this.health) {
-				console.log('you created a dead bot -- it has no health');
-				return;
+			while (this.config.missiles--) {
+				new Transformers.Missile(this);
 			}
 			
-			d.subscribe('/' + this.team.name + '/bots/play', this, '_play');
-			d.subscribe('/bots/status', this, '_sendStatus');
-			
-			this.missiles = [];
-			this.guns = [];
-
-			while (this.team.missiles--) {
-				this.missiles.push(new Transformers.Missile());
+			while (this.config.guns--) {
+				new Transformers.Gun(this);
 			}
 			
-			while (this.team.guns--) {
-				this.guns.push(new Transformers.Gun());
-			}
+			d.subscribe('/firing', this, '_defend');
+			d.subscribe('/' + this.config.team + '/join', this, '_addTeammate');
 			
-			d.publish('/' + this.team.name + '/bot/join', [ this ]);
+			d.publish('/' + this.config.team + '/join');
 		},
 		
-		_play : function(orders) {
-			console.log('playing');
-			d.publish('/' + this.team.name + '/bot/ping', [ this ]);
+		attack : function() {
+			d.publish('/' + this.config.team + '/attack', [ this ]);
 		},
 		
-		_addHealth : function(h) {
-			this.health += h;
-		},
-		
-		_sendStatus : function() {
+		_defend : function(attack) {
+			console.log('defending');
+			/* ignore attacks from our own team */
+			if (attack.bot.config.team == this.config.team) { return; }
 			
+			var damage = this._calculateDamage(attack);
+			this.health = this.health - damage;
+			
+			d.publish('/' + this.config.team + '/healthUpdate', [ {
+				health : this.health,
+				damage : damage
+			} ]);
+		},
+		
+		_calculateDamage : function(attack) {
+			return (attack.maxDamage * Math.random()) / (this.team.length + 1);
+		},
+		
+		_addTeammate : function(bot) {
+			this.team.push(bot);
 		}
 	});	
 })(dojo);
