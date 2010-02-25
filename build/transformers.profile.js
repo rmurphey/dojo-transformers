@@ -2,13 +2,13 @@ dependencies = {
 	stripConsole : true,
 	action : 'release',
 	optimize : 'shrinksafe',
-	releaseName : 'game',
+	releaseName : 'transformers',
 	
 	layers: [
 		{
-			name: "../Game/Controller.js",
+			name: "../Transformers/_base.js",
 			dependencies: [
-				"Game.Controller"
+				"Transformers._base"
 			]
 		},
 	],
@@ -16,6 +16,6 @@ dependencies = {
 	prefixes: [
 		[ "dijit", "../dijit" ],
 		[ "dojox", "../dojox" ],
-		[ "Game", "../Game" ]
+		[ "Transformers", "../Transformers" ]
 	]
 }
