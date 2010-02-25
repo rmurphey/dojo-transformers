@@ -34,7 +34,7 @@ dojo.require('Transformers.Bot');
 		},
 		
 		_play : function() {
-			
+			d.publish('/play');			
 		}
 	});
 })(dojo);

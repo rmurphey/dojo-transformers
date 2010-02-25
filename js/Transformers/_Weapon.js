@@ -5,13 +5,16 @@ dojo.provide('Transformers._Weapon');
 		constructor : function(bot) {
 			this.bot = bot;
 			this.disabled = false; 
+			this.attacking = false;
 			
 			d.subscribe('/' + bot.config.team + '/attack', this, '_fire');
+			d.subscribe('/endTurn', this, '_endTurn');
 		},
 		
 		_fire : function() {
-			console.log('attempting to fire');
-			if (this.disabled) { return; }
+			this.attacking = true;
+			
+			if (!this.rounds || this.disabled || !this.attacking) { return; }
 			this.disabled = true;
 			
 			d.publish('/firing', [ {
@@ -19,13 +22,21 @@ dojo.provide('Transformers._Weapon');
 				maxDamage : this.damage
 			} ]);
 			
-			this.rounds--;
+			// fire an arbitrary # of rounds
+			this.rounds = this.rounds - Math.floor(Math.random() * this.rounds);
 			
 			if (this.rounds) {		
-				setTimeout(d.hitch(this, function() {
+				this.timeout = setTimeout(d.hitch(this, function() {
 					this.disabled = false;
+					this._fire();
 				}), this.reload);
 			} 
+		},
+		
+		_endTurn : function() {
+			this.attacking = false;
+			this.disabled = false;
+			this.timeout && clearTimeout(this.timeout);
 		}
 	});
 })(dojo);

@@ -21,7 +21,9 @@ dojo.require('Transformers.Gun');
 				new Transformers.Gun(this);
 			}
 			
+			d.subscribe('/startTurn', this, 'attack');
 			d.subscribe('/firing', this, '_defend');
+
 			d.subscribe('/' + this.config.team + '/join', this, '_addTeammate');
 			
 			d.publish('/' + this.config.team + '/join');
@@ -29,6 +31,10 @@ dojo.require('Transformers.Gun');
 		
 		attack : function() {
 			d.publish('/' + this.config.team + '/attack', [ this ]);
+			
+			setTimeout(function() {
+				d.publish('/endTurn');
+			}, this.turnLength);
 		},
 		
 		_defend : function(attack) {
